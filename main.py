@@ -31,6 +31,7 @@ if __name__ == "__main__":
         keys = pg.key.get_pressed()
         if keys[pg.K_ESCAPE]:
             running = False
+
         if keys[pg.K_w]:
             light.position[2] += 100
         if keys[pg.K_s]:

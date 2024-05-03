@@ -1,5 +1,5 @@
 import numpy as np
-from config import Colour, SCREEN_WIDTH, SCREEN_HEIGHT
+from numba import njit
 
 
 class Sphere:
@@ -27,6 +27,7 @@ class Light:
         return (self.position - point) / np.linalg.norm(self.position - point)
 
 
+@njit(fastmath=True)
 def ambient_light(ambient, colour):
     return ambient * colour
 
