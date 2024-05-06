@@ -13,9 +13,9 @@ if __name__ == "__main__":
     running = True
     sphere = Sphere(
         np.array([SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, 0]),
-        200,
+        100,
         Colour.RED.value,
-        10
+        20
     )
     light = Light(
         np.array([800, -600, -400]),
