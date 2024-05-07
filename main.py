@@ -8,6 +8,8 @@ pg.init()
 screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pg.RESIZABLE)
 pg.display.set_caption("Phong Lighting")
 
+MOVEMENT_QUANTUM = 200
+
 if __name__ == "__main__":
     running = True
     spheres = [
@@ -45,17 +47,17 @@ if __name__ == "__main__":
             i = (i + 1) % spheres_len
 
         if keys[pg.K_w]:
-            light.position[2] += 200
+            light.position[2] += MOVEMENT_QUANTUM
         if keys[pg.K_s]:
-            light.position[2] -= 200
+            light.position[2] -= MOVEMENT_QUANTUM
         if keys[pg.K_a]:
-            light.position[0] -= 200
+            light.position[0] -= MOVEMENT_QUANTUM
         if keys[pg.K_d]:
-            light.position[0] += 200
+            light.position[0] += MOVEMENT_QUANTUM
         if keys[pg.K_q]:
-            light.position[1] -= 200
+            light.position[1] -= MOVEMENT_QUANTUM
         if keys[pg.K_e]:
-            light.position[1] += 200
+            light.position[1] += MOVEMENT_QUANTUM
         print(i, light.position)
 
         sphere = spheres[i]
