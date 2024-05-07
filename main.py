@@ -33,17 +33,17 @@ if __name__ == "__main__":
             running = False
 
         if keys[pg.K_w]:
-            light.position[2] += 100
+            light.position[2] += 200
         if keys[pg.K_s]:
-            light.position[2] -= 100
+            light.position[2] -= 200
         if keys[pg.K_a]:
-            light.position[0] -= 100
+            light.position[0] -= 200
         if keys[pg.K_d]:
-            light.position[0] += 100
+            light.position[0] += 200
         if keys[pg.K_q]:
-            light.position[1] -= 100
+            light.position[1] -= 200
         if keys[pg.K_e]:
-            light.position[1] += 100
+            light.position[1] += 200
         print(light.position)
 
         for x in range(sphere.position[0] - sphere.radius, sphere.position[0] + sphere.radius):
