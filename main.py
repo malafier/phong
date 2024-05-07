@@ -1,5 +1,5 @@
-import pygame as pg
 import numpy as np
+import pygame as pg
 
 from config import SCREEN_WIDTH, SCREEN_HEIGHT, Colour
 from lighting import phong_lighting, Sphere, Light
@@ -8,21 +8,30 @@ pg.init()
 screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pg.RESIZABLE)
 pg.display.set_caption("Phong Lighting")
 
-
 if __name__ == "__main__":
     running = True
-    sphere = Sphere(
-        np.array([SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, 0]),
-        100,
-        Colour.RED.value,
-        20
-    )
+    spheres = [
+        Sphere(
+            np.array([SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, 0]),
+            100,
+            Colour.RED.value,
+            20
+        ),
+        Sphere(
+            np.array([SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, 0]),
+            100,
+            Colour.GREEN.value,
+            100
+        ),
+    ]
     light = Light(
         np.array([800, -600, -400]),
         0.2, 0.25, 0.75
     )
     camera = np.array([0, 0, -1000])
 
+    i = 0
+    spheres_len = len(spheres)
     while running:
         screen.fill(Colour.BLACK.value)
         for event in pg.event.get():
@@ -31,6 +40,9 @@ if __name__ == "__main__":
         keys = pg.key.get_pressed()
         if keys[pg.K_ESCAPE]:
             running = False
+
+        if keys[pg.K_SPACE]:
+            i = (i + 1) % spheres_len
 
         if keys[pg.K_w]:
             light.position[2] += 200
@@ -44,8 +56,9 @@ if __name__ == "__main__":
             light.position[1] -= 200
         if keys[pg.K_e]:
             light.position[1] += 200
-        print(light.position)
+        print(i, light.position)
 
+        sphere = spheres[i]
         for x in range(sphere.position[0] - sphere.radius, sphere.position[0] + sphere.radius):
             for y in range(sphere.position[1] - sphere.radius, sphere.position[1] + sphere.radius):
                 rel_x = x - sphere.position[0]
