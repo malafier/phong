@@ -19,7 +19,7 @@ if __name__ == "__main__":
     )
     light = Light(
         np.array([800, -600, -400]),
-        0.2, 0.5, 0.5
+        0.2, 0.25, 0.75
     )
     camera = np.array([0, 0, -1000])
 
