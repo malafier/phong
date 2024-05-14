@@ -17,17 +17,23 @@ if __name__ == "__main__":
             np.array([SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, 0]),
             100,
             Colour.RED.value,
-            20
+            40
         ),
         Sphere(
             np.array([SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, 0]),
             100,
-            Colour.GREEN.value,
-            100
+            Colour.BLUE.value,
+            200
         ),
+        Sphere(
+            np.array([SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, 0]),
+            100,
+            Colour.WHITE.value,
+            5
+        )
     ]
     light = Light(
-        np.array([800, -600, -400]),
+        np.array([800, -600, 800]),
         0.2, 0.25, 0.75
     )
     camera = np.array([0, 0, -1000])

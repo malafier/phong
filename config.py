@@ -2,10 +2,10 @@ from enum import Enum
 
 
 class Colour(Enum):
-    RED = (255, 0, 0)
+    RED = (240, 10, 10)
     WHITE = (240, 240, 240)
-    BLACK = (20, 20, 20)
-    BLUE = (0, 0, 255)
+    BLACK = (30, 30, 30)
+    BLUE = (10, 10, 240)
     GREEN = (0, 255, 0)
     YELLOW = (255, 255, 0)
     CYAN = (0, 255, 255)
