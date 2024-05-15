@@ -25,7 +25,7 @@ if __name__ == "__main__":
             Colour.OAK_BROWN.value,
             shininess_const=20,
             ambient_const=0.2,
-            diffuse_const=0.5,
+            diffuse_const=0.45,
             specular_const=0.15
         ),
         Sphere(
@@ -46,7 +46,7 @@ if __name__ == "__main__":
             shininess_const=40,
             ambient_const=0.1,
             diffuse_const=0.55,
-            specular_const=0.6
+            specular_const=0.55
         ),
         Sphere(
             "CHALK",

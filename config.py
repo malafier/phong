@@ -18,7 +18,7 @@ class Colour(Enum):
 MOVEMENT_QUANTUM = 200
 
 I_a = 0.7
-I_d = 1.2
+I_d = 1.5
 I_s = 1.3
 
 SCREEN_WIDTH = 1280

@@ -62,7 +62,7 @@ def phong_lighting(sphere, light, point, view_dir):
     light_dir = light - point
     light_dir = light_dir / np.linalg.norm(light_dir)
     light = np.array([255, 255, 255])
-    light_x_colour = (light + sphere.colour) / 2
+    light_x_colour = (light * sphere.colour) / np.linalg.norm(light)
 
     ambient = sphere.colour * ambient_light(sphere.ambient)
     diffuse = light_x_colour * diffuse_light(sphere.diffuse, normal, light_dir)
