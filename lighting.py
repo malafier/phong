@@ -1,21 +1,24 @@
 import numpy as np
 from numba import jit
+import config
 
 
 class Sphere:
-    def __init__(self, position, radius, colour, shininess_const):
+    def __init__(self, position, radius, colour, shininess_const=50, ambient=0.2, diffuse_const=0.5, specular_const=0.5):
         self.position = position
         self.radius = radius
         self.colour = np.array(colour)
         self.shininess = shininess_const
+        self.ambient = ambient
+        self.diffuse = diffuse_const
+        self.specular = specular_const
 
 
 class Light:
-    def __init__(self, position, ambient_const, diffuse_const, specular_const):
+    def __init__(self, position):
         self.position = position
-        self.ambient = ambient_const
-        self.diffuse = diffuse_const
-        self.specular = specular_const
+        self.ambient = 0.2
+        self.light_colour = np.array([255, 255, 255])
 
 
 @jit(nopython=True)
@@ -29,18 +32,18 @@ def get_z(sphere, point):
 
 
 @jit(nopython=True)
-def ambient_light(ambient, colour):
-    return ambient * colour
+def ambient_light():
+    return config.AMBIENT_INTENSITY
 
 
-def diffuse_light(diffuse, normal, light_dir, colour):
-    return diffuse * np.dot(normal, light_dir) * colour
+def diffuse_light(normal, light_dir):
+    return np.dot(normal, light_dir) * config.DIFFUSE_INTENSITY
 
 
-def specular_light(specular, normal, light_dir, view_dir, colour, shininess):
+def specular_light(normal, light_dir, view_dir, shininess):
     reflected_vec = light_dir - 2 * np.dot(light_dir, normal) * normal
     cos_angle = np.dot(view_dir, reflected_vec) / (np.linalg.norm(view_dir) * np.linalg.norm(reflected_vec))
-    return specular * colour * np.power(cos_angle, shininess)
+    return np.power(cos_angle, shininess) * config.SPECULAR_INTENSITY
 
 
 def phong_lighting(sphere, light, point, camera):
@@ -49,11 +52,16 @@ def phong_lighting(sphere, light, point, camera):
 
     normal = (point - sphere.position) / np.linalg.norm(point - sphere.position)
     vec_to_light = (light.position - point) / np.linalg.norm(light.position - point)
+    # light_x_colour = sphere.colour + light.light_colour
+    # for i in range(len(light_x_colour)):
+    #     if light_x_colour[i] > 255:
+    #         light_x_colour[i] = 255
 
-    ambient = ambient_light(light.ambient, sphere.colour)
-    diffuse = diffuse_light(light.diffuse, normal, vec_to_light, sphere.colour)
-    specular = specular_light(light.specular, normal, vec_to_light, vec_to_viewer, sphere.colour, sphere.shininess)
+    ambient = sphere.ambient * ambient_light()
+    diffuse = sphere.diffuse * diffuse_light(normal, vec_to_light)
+    specular = sphere.specular * specular_light(normal, vec_to_light, vec_to_viewer, sphere.shininess)
     illumination = ambient + diffuse + specular
+    # print(sphere.colour, illumination)
 
-    illumination_list = [int(min(255, max(0, i))) for i in illumination]
+    illumination_list = [int(min(255, max(0, x * illumination))) for x in sphere.colour]
     return tuple(illumination_list)

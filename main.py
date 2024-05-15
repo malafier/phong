@@ -16,32 +16,35 @@ if __name__ == "__main__":
         Sphere(
             np.array([SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, 0]),
             100,
-            Colour.RED.value,
-            40
+            Colour.BROWN.value,
+            50,
+            diffuse_const=0.5,
+            specular_const=0.5
         ),
         Sphere(
             np.array([SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, 0]),
             100,
-            Colour.BLUE.value,
-            200
+            Colour.METAL_GREY.value,
+            500,
+            diffuse_const=1,
+            specular_const=0.01
         ),
         Sphere(
             np.array([SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, 0]),
             100,
             Colour.WHITE.value,
-            5
+            2,
+            diffuse_const=0.01,
+            specular_const=1
         )
     ]
-    light = Light(
-        np.array([800, -600, 800]),
-        0.2, 0.25, 0.75
-    )
+    light = Light(np.array([800, -600, 800]),)
     camera = np.array([0, 0, -1000])
 
     i = 0
     spheres_len = len(spheres)
     while running:
-        screen.fill(Colour.BLACK.value)
+        screen.fill(Colour.GREY.value)
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 running = False
