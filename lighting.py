@@ -28,6 +28,11 @@ class Sphere:
 
 
 @jit(nopython=True)
+def dot(a, b):
+    return np.sum(a * b)
+
+
+@jit(nopython=True)
 def z_of_sphere_point(sphere_centre, r, x, y):
     z_sqrt = r ** 2 - (x - sphere_centre[0]) ** 2 - (y - sphere_centre[1]) ** 2
     return np.sqrt(z_sqrt) + sphere_centre[2] if z_sqrt >= 0 else np.nan
@@ -44,13 +49,14 @@ def ambient_light(ambient):
     return ambient * config.I_a
 
 
+@jit(nopython=True)
 def diffuse_light(diffuse, normal, light_dir):
-    return diffuse * config.I_d * max(np.dot(normal, light_dir), 0)
+    return diffuse * config.I_d * max(dot(normal, light_dir), 0)
 
 
 def specular_light(specular, normal, light_dir, view_dir, shininess):
-    reflection = 2 * max(np.dot(light_dir, normal), 0) * normal - light_dir
-    cos_angle = np.dot(view_dir, reflection) / (np.linalg.norm(view_dir) * np.linalg.norm(reflection))
+    reflection = 2 * max(dot(light_dir, normal), 0) * normal - light_dir
+    cos_angle = max(dot(view_dir, reflection), 0) / (np.linalg.norm(view_dir) * np.linalg.norm(reflection))
     return specular * config.I_s * np.power(cos_angle, shininess)
 
 

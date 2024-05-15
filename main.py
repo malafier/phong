@@ -26,7 +26,7 @@ if __name__ == "__main__":
             shininess_const=20,
             ambient_const=0.2,
             diffuse_const=0.45,
-            specular_const=0.15
+            specular_const=0.2
         ),
         Sphere(
             "METAL",
