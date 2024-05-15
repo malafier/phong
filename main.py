@@ -90,7 +90,7 @@ if __name__ == "__main__":
         print(i, light)
 
         if 0 <= light[0] < SCREEN_WIDTH and 0 <= light[1] < SCREEN_HEIGHT:
-            pg.draw.circle(screen, Colour.YELLOW.value, (light[0], light[1]), 3)
+            pg.draw.circle(screen, Colour.YELLOW.value, (int(light[0]), int(light[1])), 3)
         sphere = spheres[i]
         for x in range(sphere.position[0] - sphere.radius, sphere.position[0] + sphere.radius):
             for y in range(sphere.position[1] - sphere.radius, sphere.position[1] + sphere.radius):
