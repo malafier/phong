@@ -1,23 +1,26 @@
 from enum import Enum
 
+import numpy as np
+
 
 class Colour(Enum):
     RED = (240, 10, 10)
     WHITE = (240, 240, 240)
     BLACK = (30, 30, 30)
     BLUE = (10, 10, 240)
-    GREEN = (0, 255, 0)
     YELLOW = (255, 255, 0)
     CYAN = (0, 255, 255)
-    MAGENTA = (255, 0, 255)
     GREY = (200, 200, 200)
-    METAL_GREY = (170, 170, 170)
-    BROWN = (140, 70, 20)
+    METAL_GREY = (90, 90, 90)
+    OAK_BROWN = (230, 190, 145)
 
 
-AMBIENT_INTENSITY = 0.75
-DIFFUSE_INTENSITY = 5.5
-SPECULAR_INTENSITY = 1.5
+MOVEMENT_QUANTUM = 200
+
+I_a = 0.75
+I_d = 1.25
+I_s = 1.35
 
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
+SCREEN_CENTRE = np.array([SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, 0])

@@ -1,45 +1,65 @@
 import numpy as np
 import pygame as pg
+from numba import jit
 
-from config import SCREEN_WIDTH, SCREEN_HEIGHT, Colour
-from lighting import phong_lighting, Sphere, Light
+from config import SCREEN_WIDTH, SCREEN_HEIGHT, Colour, MOVEMENT_QUANTUM, SCREEN_CENTRE
+from lighting import phong_lighting, Sphere
 
 pg.init()
 screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pg.RESIZABLE)
-pg.display.set_caption("Phong Lighting")
+pg.display.set_caption("Phong")
 
-MOVEMENT_QUANTUM = 200
+
+@jit(nopython=True)
+def in_circle(r_x, r_y, r):
+    return r_x ** 2 + r_y ** 2 <= r ** 2
+
 
 if __name__ == "__main__":
     running = True
     spheres = [
         Sphere(
-            np.array([SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, 0]),
+            "WOOD",
+            SCREEN_CENTRE,
             100,
-            Colour.BROWN.value,
-            50,
+            Colour.OAK_BROWN.value,
+            shininess_const=20,
+            ambient_const=0.25,
             diffuse_const=0.5,
-            specular_const=0.5
+            specular_const=0.1
         ),
         Sphere(
-            np.array([SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, 0]),
+            "METAL",
+            SCREEN_CENTRE,
             100,
             Colour.METAL_GREY.value,
-            500,
-            diffuse_const=1,
-            specular_const=0.01
+            shininess_const=200,
+            ambient_const=0.3,
+            diffuse_const=0.15,
+            specular_const=1
         ),
         Sphere(
-            np.array([SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, 0]),
+            "PLASTIC",
+            SCREEN_CENTRE,
+            100,
+            Colour.CYAN.value,
+            shininess_const=40,
+            ambient_const=0.1,
+            diffuse_const=0.55,
+            specular_const=0.7
+        ),
+        Sphere(
+            "CHALK",
+            SCREEN_CENTRE,
             100,
             Colour.WHITE.value,
-            2,
-            diffuse_const=0.01,
-            specular_const=1
+            shininess_const=5,
+            diffuse_const=0.95,
+            specular_const=0.001
         )
     ]
-    light = Light(np.array([800, -600, 800]),)
-    camera = np.array([0, 0, -1000])
+    light = np.array([800, -600, 800])
+    view_dir = np.array([0, 0, 1])
 
     i = 0
     spheres_len = len(spheres)
@@ -56,27 +76,29 @@ if __name__ == "__main__":
             i = (i + 1) % spheres_len
 
         if keys[pg.K_w]:
-            light.position[2] += MOVEMENT_QUANTUM
+            light[2] += MOVEMENT_QUANTUM
         if keys[pg.K_s]:
-            light.position[2] -= MOVEMENT_QUANTUM
+            light[2] -= MOVEMENT_QUANTUM
         if keys[pg.K_a]:
-            light.position[0] -= MOVEMENT_QUANTUM
+            light[0] -= MOVEMENT_QUANTUM
         if keys[pg.K_d]:
-            light.position[0] += MOVEMENT_QUANTUM
+            light[0] += MOVEMENT_QUANTUM
         if keys[pg.K_q]:
-            light.position[1] -= MOVEMENT_QUANTUM
+            light[1] -= MOVEMENT_QUANTUM
         if keys[pg.K_e]:
-            light.position[1] += MOVEMENT_QUANTUM
-        print(i, light.position)
+            light[1] += MOVEMENT_QUANTUM
+        print(i, light)
 
+        if 0 <= light[0] < SCREEN_WIDTH and 0 <= light[1] < SCREEN_HEIGHT:
+            pg.draw.circle(screen, Colour.YELLOW.value, (light[0], light[1]), 3)
         sphere = spheres[i]
         for x in range(sphere.position[0] - sphere.radius, sphere.position[0] + sphere.radius):
             for y in range(sphere.position[1] - sphere.radius, sphere.position[1] + sphere.radius):
                 rel_x = x - sphere.position[0]
                 rel_y = y - sphere.position[1]
-                if rel_x ** 2 + rel_y ** 2 <= sphere.radius ** 2:
-                    point = np.array([x, y, 0])
-                    colour = phong_lighting(sphere, light, point, camera)
+                if in_circle(rel_x, rel_y, sphere.radius):
+                    colour = phong_lighting(sphere, light, np.array([x, y, 0]), view_dir)
                     pg.draw.circle(screen, colour, (x, y), 1)
+        pg.display.set_caption(f"Phong - {sphere.name}")
         pg.display.update()
     pg.quit()

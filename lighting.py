@@ -1,67 +1,70 @@
 import numpy as np
 from numba import jit
+
 import config
 
 
 class Sphere:
-    def __init__(self, position, radius, colour, shininess_const=50, ambient=0.2, diffuse_const=0.5, specular_const=0.5):
+    def __init__(
+            self,
+            name,
+            position,
+            radius,
+            colour,
+            shininess_const=50,
+            ambient_const=0.2,
+            diffuse_const=0.5,
+            specular_const=0.5
+    ):
+        self.name = name
         self.position = position
         self.radius = radius
         self.colour = np.array(colour)
+
         self.shininess = shininess_const
-        self.ambient = ambient
+        self.ambient = ambient_const
         self.diffuse = diffuse_const
         self.specular = specular_const
 
 
-class Light:
-    def __init__(self, position):
-        self.position = position
-        self.ambient = 0.2
-        self.light_colour = np.array([255, 255, 255])
-
-
 @jit(nopython=True)
 def z_of_sphere_point(sphere_centre, r, x, y):
-    z = np.sqrt(r ** 2 - (x - sphere_centre[0]) ** 2 - (y - sphere_centre[1]) ** 2) + sphere_centre[2]
-    return z if z >= 0 else -z
-
-
-def get_z(sphere, point):
-    return z_of_sphere_point(sphere.position, sphere.radius, point[0], point[1])
+    z_sqrt = r ** 2 - (x - sphere_centre[0]) ** 2 - (y - sphere_centre[1]) ** 2
+    return np.sqrt(z_sqrt) + sphere_centre[2] if z_sqrt >= 0 else np.nan
 
 
 @jit(nopython=True)
-def ambient_light():
-    return config.AMBIENT_INTENSITY
+def normal_of(x, y, z):
+    length = np.sqrt(x ** 2 + y ** 2 + z ** 2)
+    return np.array([x / length, y / length, z / length])
 
 
-def diffuse_light(normal, light_dir):
-    return np.dot(normal, light_dir) * config.DIFFUSE_INTENSITY
+@jit(nopython=True)
+def ambient_light(ambient):
+    return ambient * config.I_a
 
 
-def specular_light(normal, light_dir, view_dir, shininess):
-    reflected_vec = light_dir - 2 * np.dot(light_dir, normal) * normal
-    cos_angle = np.dot(view_dir, reflected_vec) / (np.linalg.norm(view_dir) * np.linalg.norm(reflected_vec))
-    return np.power(cos_angle, shininess) * config.SPECULAR_INTENSITY
+def diffuse_light(diffuse, normal, light_dir):
+    return diffuse * config.I_d * max(np.dot(normal, light_dir), 0)
 
 
-def phong_lighting(sphere, light, point, camera):
-    vec_to_viewer = (camera - point) / np.linalg.norm(camera - point)
-    point[2] = get_z(sphere, point)
+def specular_light(specular, normal, light_dir, view_dir, shininess):
+    reflection = 2 * max(np.dot(light_dir, normal), 0) * normal - light_dir
+    cos_angle = np.dot(view_dir, reflection) / (np.linalg.norm(view_dir) * np.linalg.norm(reflection))
+    return specular * config.I_s * np.power(cos_angle, shininess)
 
-    normal = (point - sphere.position) / np.linalg.norm(point - sphere.position)
-    vec_to_light = (light.position - point) / np.linalg.norm(light.position - point)
-    # light_x_colour = sphere.colour + light.light_colour
-    # for i in range(len(light_x_colour)):
-    #     if light_x_colour[i] > 255:
-    #         light_x_colour[i] = 255
 
-    ambient = sphere.ambient * ambient_light()
-    diffuse = sphere.diffuse * diffuse_light(normal, vec_to_light)
-    specular = sphere.specular * specular_light(normal, vec_to_light, vec_to_viewer, sphere.shininess)
+def phong_lighting(sphere, light, point, view_dir):
+    point[2] = z_of_sphere_point(sphere.position, sphere.radius, point[0], point[1])
+
+    normal = normal_of(point[0] - sphere.position[0], point[1] - sphere.position[1], point[2] - sphere.position[2])
+    light_dir = light - point
+    light_dir = light_dir / np.linalg.norm(light_dir)
+
+    ambient = ambient_light(sphere.ambient)
+    diffuse = diffuse_light(sphere.diffuse, normal, light_dir)
+    specular = specular_light(sphere.specular, normal, light_dir, view_dir, sphere.shininess)
     illumination = ambient + diffuse + specular
-    # print(sphere.colour, illumination)
 
     illumination_list = [int(min(255, max(0, x * illumination))) for x in sphere.colour]
     return tuple(illumination_list)
