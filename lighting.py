@@ -56,15 +56,18 @@ def specular_light(specular, normal, light_dir, view_dir, shininess):
 
 def phong_lighting(sphere, light, point, view_dir):
     point[2] = z_of_sphere_point(sphere.position, sphere.radius, point[0], point[1])
-
     normal = normal_of(point[0] - sphere.position[0], point[1] - sphere.position[1], point[2] - sphere.position[2])
+
+    # light dir and light colour
     light_dir = light - point
     light_dir = light_dir / np.linalg.norm(light_dir)
+    light = np.array([255, 255, 255])
+    light_x_colour = (light + sphere.colour) / 2
 
-    ambient = ambient_light(sphere.ambient)
-    diffuse = diffuse_light(sphere.diffuse, normal, light_dir)
-    specular = specular_light(sphere.specular, normal, light_dir, view_dir, sphere.shininess)
+    ambient = sphere.colour * ambient_light(sphere.ambient)
+    diffuse = light_x_colour * diffuse_light(sphere.diffuse, normal, light_dir)
+    specular = light * specular_light(sphere.specular, normal, light_dir, view_dir, sphere.shininess)
     illumination = ambient + diffuse + specular
 
-    illumination_list = [int(min(255, max(0, x * illumination))) for x in sphere.colour]
+    illumination_list = [int(min(255, max(0, x))) for x in illumination]
     return tuple(illumination_list)
